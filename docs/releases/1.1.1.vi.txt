@@ -1,0 +1,3 @@
+Thay badge trạng thái Directory bằng icon gọn và hỗ trợ accessibility.
+Bổ sung tooltip trạng thái song ngữ, giữ nguyên đầy đủ năm trạng thái runtime.
+Căn giữa theo chiều dọc cho dòng, ô, tiêu đề, hyperlink và template của toàn bộ DataGrid.

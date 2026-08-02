@@ -1,0 +1,3 @@
+Creating a file no longer emits an additional Change event for its parent directory.
+The same parent-directory timestamp noise is suppressed during snapshot reconciliation and offline recovery.
+Real file events and directory attribute changes continue to be monitored.

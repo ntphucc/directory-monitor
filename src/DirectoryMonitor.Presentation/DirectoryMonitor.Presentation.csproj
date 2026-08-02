@@ -1,0 +1,46 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <ItemGroup>
+    <ProjectReference Include="..\DirectoryMonitor.Domain\DirectoryMonitor.Domain.csproj" />
+    <ProjectReference Include="..\DirectoryMonitor.Application\DirectoryMonitor.Application.csproj" />
+    <ProjectReference Include="..\DirectoryMonitor.Infrastructure\DirectoryMonitor.Infrastructure.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="Assets\directory-monitor.png" />
+    <Resource Include="Assets\directory-monitor.ico" />
+    <None Include="$(NuGetPackageRoot)system.diagnostics.eventlog\9.0.2\runtimes\win\lib\net9.0\System.Diagnostics.EventLog.Messages.dll" Link="System.Diagnostics.EventLog.Messages.dll" TargetPath="System.Diagnostics.EventLog.Messages.dll" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" ExcludeFromSingleFile="true" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.2" />
+    <PackageReference Include="Microsoft.Extensions.Hosting" Version="9.0.2" />
+    <PackageReference Include="Serilog" Version="4.4.0" />
+    <PackageReference Include="Serilog.Settings.Configuration" Version="10.0.1" />
+    <PackageReference Include="Serilog.Sinks.Async" Version="2.1.0" />
+    <PackageReference Include="Serilog.Sinks.File" Version="7.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="appsettings.json" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
+  </ItemGroup>
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <AssemblyName>Directory Monitor</AssemblyName>
+    <Product>Directory Monitor</Product>
+    <Title>Directory Monitor</Title>
+    <TargetFramework>net9.0-windows</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <UseWPF>true</UseWPF>
+    <UseWindowsForms>true</UseWindowsForms>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+    <ApplicationIcon>Assets\directory-monitor.ico</ApplicationIcon>
+  </PropertyGroup>
+
+  <Target Name="CopyEventLogMessageResource" AfterTargets="Publish">
+    <Copy SourceFiles="$(NuGetPackageRoot)system.diagnostics.eventlog\9.0.2\runtimes\win\lib\net9.0\System.Diagnostics.EventLog.Messages.dll" DestinationFolder="$(PublishDir)" SkipUnchangedFiles="true" />
+  </Target>
+
+</Project>

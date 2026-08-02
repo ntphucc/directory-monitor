@@ -1,0 +1,40 @@
+.vs/
+.idea/
+.vscode/
+.dotnet/
+.dotnet-install.ps1
+**/bin/
+**/obj/
+TestResults/
+artifacts/
+
+# Local runtime data
+**/Logs/
+*.log
+*.user
+*.suo
+*.userprefs
+*.db
+*.db-shm
+*.db-wal
+*.dm
+*.part
+
+# Machine-specific configuration and secrets
+.env
+.env.*
+!.env.example
+appsettings.Development.json
+appsettings.Local.json
+appsettings.Production.json
+secrets.json
+credentials.json
+*.pfx
+*.p12
+*.pem
+*.key
+*.snk
+
+# Windows-generated files
+Thumbs.db
+Desktop.ini

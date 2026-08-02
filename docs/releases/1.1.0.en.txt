@@ -1,0 +1,4 @@
+Added automatic update checks at startup, daily, monthly, or on demand.
+Added secure HTTPS manifest validation and SHA-256 installer verification.
+Added update badge, localized release notes, exact-version skip, and download progress.
+Added consistent SQLite backup and portable-to-installer data migration.

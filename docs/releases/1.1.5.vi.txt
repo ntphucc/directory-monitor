@@ -1,0 +1,3 @@
+Tạo file không còn phát sinh thêm event Change cho thư mục cha.
+Nhiễu timestamp của thư mục cha cũng được loại bỏ khi reconciliation và phục hồi sự kiện lúc app offline.
+Event thực của file và thay đổi attributes của thư mục vẫn tiếp tục được theo dõi.

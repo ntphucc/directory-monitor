@@ -1,0 +1,3 @@
+Replaced the Directory status badge with compact, accessible status icons.
+Added localized status tooltips while preserving all five runtime states.
+Centered rows, cells, headers, hyperlinks, and templates vertically across all DataGrids.

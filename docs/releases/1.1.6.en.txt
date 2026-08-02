@@ -1,0 +1,3 @@
+- Database outputs now treat an existing event UUID or MachineId/SequenceNumber pair as an idempotent delivery instead of retrying forever.
+- The Outputs grid keeps a compact error preview and shows the complete multiline error when the row is selected.
+- Full output errors can be copied directly for troubleshooting and support.

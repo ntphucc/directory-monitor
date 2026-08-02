@@ -1,0 +1,4 @@
+Bổ sung kiểm tra cập nhật khi khởi động, hàng ngày, hàng tháng hoặc thủ công.
+Bổ sung kiểm tra manifest HTTPS và xác minh installer bằng SHA-256.
+Bổ sung badge cập nhật, release notes song ngữ, bỏ qua đúng phiên bản và tiến trình tải.
+Bổ sung backup SQLite nhất quán và chuyển dữ liệu từ portable sang installer.

@@ -1,0 +1,3 @@
+Output PostgreSQL giờ tạo và ghi các bảng trong schema mặc định public.
+Event được hiển thị từ cũ đến mới, event mới nhất nằm dưới cùng và bảng tự động cuộn xuống.
+Nội dung các dòng trong Directory, Event và Output grid được căn giữa theo chiều dọc nhất quán.

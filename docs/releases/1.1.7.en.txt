@@ -1,0 +1,3 @@
+- ListBox items are vertically centered consistently throughout the application.
+- The main title bar now provides an explicit Exit button with confirmation and clean monitoring shutdown.
+- The standard window close button continues to minimize Directory Monitor to the system tray.

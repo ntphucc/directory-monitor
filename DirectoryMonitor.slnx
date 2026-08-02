@@ -1,0 +1,14 @@
+<Solution>
+  <Configurations>
+    <Platform Name="Any CPU" />
+    <Platform Name="x64" />
+    <Platform Name="x86" />
+  </Configurations>
+  <Folder Name="/src/">
+    <Project Path="src/DirectoryMonitor.Application/DirectoryMonitor.Application.csproj" />
+    <Project Path="src/DirectoryMonitor.Domain/DirectoryMonitor.Domain.csproj" />
+    <Project Path="src/DirectoryMonitor.Infrastructure/DirectoryMonitor.Infrastructure.csproj" />
+    <Project Path="src/DirectoryMonitor.Presentation/DirectoryMonitor.Presentation.csproj" />
+    <Project Path="tests/DirectoryMonitor.Tests/DirectoryMonitor.Tests.csproj" />
+  </Folder>
+</Solution>

@@ -1,0 +1,3 @@
+Settings giờ hiển thị đường dẫn SQLite thực tế và có thể mở trực tiếp thư mục chứa database.
+Tài liệu giải thích rõ thời điểm tạo database cùng các file SQLite WAL/SHM.
+Repository giờ chỉ sử dụng solution DirectoryMonitor.slnx.

@@ -1,0 +1,3 @@
+Added connection string examples and replacement guidance for PostgreSQL and SQL Server outputs.
+Added Windows Authentication and SQL Login sample selection for SQL Server.
+Added safe Use sample behavior and validation that blocks unreplaced placeholders before Test or Save.

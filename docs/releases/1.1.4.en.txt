@@ -1,0 +1,3 @@
+Settings now displays the resolved SQLite database path and can open its folder directly.
+Documentation clarifies when the database and SQLite WAL/SHM files are created.
+The repository now uses DirectoryMonitor.slnx as its only solution file.

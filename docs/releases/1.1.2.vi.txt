@@ -1,0 +1,3 @@
+Bổ sung chuỗi kết nối mẫu và hướng dẫn thay giá trị cho output PostgreSQL và SQL Server.
+Bổ sung lựa chọn mẫu Windows Authentication và SQL Login cho SQL Server.
+Bổ sung Use sample an toàn và chặn Test hoặc Save khi còn placeholder chưa được thay.

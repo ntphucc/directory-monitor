@@ -1,0 +1,5 @@
+Chuyển cấu hình SQLite và Serilog sang appsettings.json có tự động reload.
+Bổ sung giao diện System, Light và Dark với màu chữ dễ đọc hơn.
+Bổ sung menu chuột phải, nhân bản và sửa bằng double-click cho Directory/Output.
+Điều chỉnh Event grid và Clear all events chỉ xoá dữ liệu trên UI.
+Bổ sung Import/Export JSON, XML và định dạng .dm mã hoá.

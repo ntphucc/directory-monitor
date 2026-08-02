@@ -1,0 +1,3 @@
+- Đầu ra database xem UUID event hoặc cặp MachineId/SequenceNumber đã tồn tại là lần gửi lặp hợp lệ, không còn thử lại vô hạn.
+- Bảng Outputs giữ phần xem trước lỗi gọn và hiển thị toàn bộ lỗi nhiều dòng khi chọn dòng tương ứng.
+- Có thể sao chép trực tiếp toàn bộ lỗi đầu ra để kiểm tra và gửi hỗ trợ.

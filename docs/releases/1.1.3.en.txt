@@ -1,0 +1,3 @@
+PostgreSQL output now creates and writes tables in the default public schema.
+Events are displayed from oldest to newest, with the newest event at the bottom and automatic scrolling.
+Vertical alignment is consistent across all Directory, Event, and Output grid rows.

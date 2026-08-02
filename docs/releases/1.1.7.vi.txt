@@ -1,0 +1,3 @@
+- Các item trong ListBox được căn giữa theo chiều dọc nhất quán trên toàn ứng dụng.
+- Thanh tiêu đề chính có nút Thoát riêng, yêu cầu xác nhận và dừng monitoring an toàn.
+- Nút đóng cửa sổ tiêu chuẩn vẫn thu Directory Monitor xuống khay hệ thống.

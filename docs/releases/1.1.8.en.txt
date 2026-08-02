@@ -1,0 +1,5 @@
+Moved SQLite and Serilog configuration to reloadable appsettings.json.
+Added System, Light, and Dark themes with improved control contrast.
+Added Directory and Output context actions, duplication, and double-click editing.
+Updated the Event grid and made Clear all events UI-only.
+Added JSON, XML, and encrypted .dm import/export.
