@@ -1,54 +1,120 @@
-# Directory Monitor
+<p align="center">
+  <img src="src/DirectoryMonitor.Presentation/Assets/directory-monitor.png" alt="Directory Monitor icon" width="96" height="96">
+</p>
 
-Windows desktop application for monitoring filesystem changes and delivering normalized events to text files, PostgreSQL, SQL Server, and Windows Application Event Log.
+<h1 align="center">Directory Monitor</h1>
 
-Current application version: **1.1.8**.
+<p align="center">
+  A native Windows application for reliable, real-time filesystem monitoring and multi-destination event delivery.
+</p>
+
+<p align="center">
+  <a href="https://github.com/ntphucc/directory-monitor/actions/workflows/ci.yml"><img src="https://github.com/ntphucc/directory-monitor/actions/workflows/ci.yml/badge.svg" alt="CI status"></a>
+  <a href="https://github.com/ntphucc/directory-monitor/actions/workflows/codeql.yml"><img src="https://github.com/ntphucc/directory-monitor/actions/workflows/codeql.yml/badge.svg" alt="CodeQL status"></a>
+  <img src="https://img.shields.io/badge/.NET-9.0-512BD4" alt=".NET 9">
+  <img src="https://img.shields.io/badge/platform-Windows-0078D4" alt="Windows">
+  <img src="https://img.shields.io/badge/version-1.1.8-22C55E" alt="Version 1.1.8">
+</p>
+
+Directory Monitor watches multiple local or UNC directories, normalizes filesystem changes, displays them in a responsive WPF interface, and reliably delivers them to one or more configured outputs. A durable SQLite outbox prevents temporary destination failures from blocking monitoring or losing committed events.
+
+## Highlights
+
+- Monitor multiple paths independently, including local folders and UNC shares.
+- Track `New`, `Change`, `Modify Properties`, and `Delete` for files, directories, or both.
+- Filter entries with include/exclude glob patterns and optionally include subdirectories.
+- Deliver concurrently to text files, PostgreSQL, SQL Server, and Windows Application Event Log.
+- Recover missed changes through SQLite snapshots and reconciliation after restart, reconnect, resume, or watcher overflow.
+- Inspect events in chronological order with color coding, path hyperlinks, filtering, copy actions, and automatic scrolling.
+- Run in the system tray, start with Windows, and use localized English/Vietnamese Light, Dark, or System themes.
+- Import or export configuration and events as JSON, XML, or password-encrypted `.dm` packages.
+- Check and install optional HTTPS updates with size and SHA-256 verification.
+
+## Architecture
+
+The solution follows a layered structure with dependencies pointing inward:
+
+```mermaid
+flowchart LR
+    W["FileSystemWatcher"] --> C["Bounded channel"]
+    C --> N["Debounce and classification"]
+    N --> O["SQLite durable outbox"]
+    O --> U["Batched WPF UI"]
+    O --> T["Text outputs"]
+    O --> P["PostgreSQL"]
+    O --> S["SQL Server"]
+    O --> E["Windows Event Log"]
+    R["Snapshot reconciliation"] --> O
+```
+
+| Project | Responsibility |
+|---|---|
+| `DirectoryMonitor.Domain` | Entities, enums, and transfer models |
+| `DirectoryMonitor.Application` | Use-case interfaces and orchestration contracts |
+| `DirectoryMonitor.Infrastructure` | Watchers, SQLite, outputs, updates, security, and import/export |
+| `DirectoryMonitor.Presentation` | WPF views, MVVM view models, localization, themes, and app lifecycle |
+| `DirectoryMonitor.Tests` | Unit, integration, storage, monitoring, update, and presentation checks |
+
+See [Architecture](docs/ARCHITECTURE.md) for threading, reliability, security boundaries, and project dependency rules.
 
 ## Requirements
 
-- Windows 10/11 or Windows Server 2022/2025 with Desktop Experience.
-- .NET 9 SDK for development. Release publishing is self-contained (`win-x64`).
-- Database credentials need DDL permissions during first schema initialization or migration.
+Runtime targets:
 
-## Build and run
+- Windows 10 or Windows 11 x64.
+- Windows Server 2022 or 2025 with Desktop Experience.
+- Self-contained release builds do not require a separately installed .NET runtime.
+
+Development requirements:
+
+- Windows with the .NET 9 SDK selected by [`global.json`](global.json).
+- Visual Studio 2022 or another editor capable of building WPF projects.
+- Inno Setup 6 only when producing the Windows installer.
+
+## Build and test
 
 ```powershell
-dotnet restore DirectoryMonitor.slnx
-dotnet build DirectoryMonitor.slnx
-dotnet test DirectoryMonitor.slnx
+dotnet restore DirectoryMonitor.slnx --locked-mode
+dotnet build DirectoryMonitor.slnx --configuration Release --no-restore
+dotnet test DirectoryMonitor.slnx --configuration Release --no-build --no-restore
 dotnet run --project src/DirectoryMonitor.Presentation
 ```
 
-The SQLite connection string is configured in the external `appsettings.json`. Its default stores configuration, snapshots, imported events, and the durable outbox beside the executable in:
+CI performs the same locked restore, Release build, automated tests, and coverage collection on a Windows runner. CodeQL separately analyzes the C# codebase.
+
+## Storage and configuration
+
+The external `appsettings.json` configures SQLite and Serilog. Relative paths are resolved from the executable directory. The default SQLite location is:
 
 ```text
 <Directory Monitor.exe folder>\Data\directory-monitor.db
 ```
 
-For development or tests, override the folder with `DIRECTORY_MONITOR_DATA`. On first startup after an upgrade, if the new database does not exist, the application copies the legacy `%ProgramData%\Directory Monitor\directory-monitor.db` database with SQLite backup and leaves the legacy file untouched.
+For development and tests, `DIRECTORY_MONITOR_DATA` overrides the data directory. SQLite path changes detected while the app is running require a restart so the durable outbox is never split across databases.
 
-`appsettings.json` is watched for changes. A changed SQLite connection string is shown as **restart required** and does not switch the active outbox while the app is running. Serilog settings reload live; daily UTF-8 logs are written by default to `<app>\Logs` and retained for 30 days. Connection strings and import/export passwords are never written to operational logs.
+Daily UTF-8 operational logs are written to `<app>\Logs` and retained for 30 days by default. Database connection strings are encrypted with Windows DPAPI CurrentUser and are never written to operational logs.
 
-The database is created during the first successful startup, so a newly extracted package initially contains only `Data\README.txt`. The Settings tab shows the resolved absolute database path and provides an **Open folder** button. SQLite can create `directory-monitor.db-wal` and `directory-monitor.db-shm` beside the database while the app is running.
+Do not commit local databases, logs, `.dm` exports, certificates, environment files, or customer data. The repository `.gitignore` excludes these common runtime and secret-bearing files.
 
-## Outputs
+## Output destinations
 
-- **Text:** UTF-8 append-only logs with Plain Text, JSON Lines, CSV, or a custom token template.
-- **PostgreSQL 14+:** creates/migrates tables under the default `public` schema automatically.
-- **SQL Server 2019+:** creates/migrates tables under `dbo` automatically.
-- **Windows Event Log:** writes to `Windows Logs > Application` with source `Directory Monitor`; the installer registers the source.
+| Destination | Behavior |
+|---|---|
+| Text | UTF-8 Plain Text, JSON Lines, CSV, or custom templates with rotation and retention |
+| PostgreSQL 14+ | Automatically creates and migrates tables in the default `public` schema |
+| SQL Server 2019+ | Automatically creates and migrates tables in `dbo` |
+| Windows Event Log | Writes to `Windows Logs > Application`; the installer registers the event source |
 
-Database delivery is idempotent for both the event UUID and the per-machine sequence. If an already delivered event is found again, it is treated as delivered instead of remaining in the retry queue. On the Outputs tab, select a failed output to see the complete multiline error in a selectable details panel or copy it with **Copy error**.
+Database delivery is idempotent by event UUID and by `(MachineId, SequenceNumber)`. A destination failure is retried independently and does not block healthy destinations.
 
-Connection strings are encrypted with Windows DPAPI CurrentUser. A database destination is tested and initialized before it can be saved.
+## Reliability and security notes
 
-## Updates
-
-Automatic updates are opt-in: the manifest URL is empty by default. In **Settings > Application updates**, enter an anonymous HTTPS manifest URL and select Every startup, Daily, Monthly, or Never. Manual **Check now** works for every schedule, including Never.
-
-The app accepts only HTTPS manifest/installer URLs, stable `major.minor.patch` versions, installers up to 1 GB, and downloads whose byte size and SHA-256 exactly match the manifest. Before elevation it creates a consistent SQLite backup. The first installer update can move a portable installation into Program Files without overwriting an existing target database.
-
-See [docs/UPDATE_MANIFEST.md](docs/UPDATE_MANIFEST.md) for publishing and security guidance.
+- Watcher callbacks only enqueue raw changes; filesystem, SQLite, network, and UI work run outside the callback and UI threads.
+- Events committed to SQLite remain pending until each assigned destination acknowledges delivery.
+- The application does not read or store file contents.
+- `UserName` identifies the Windows account running Directory Monitor; it does not claim to identify the person or process that changed a file.
+- Update manifests and installers must use HTTPS. Installer size and SHA-256 must match the manifest before execution.
+- Human-readable JSON/XML exports omit database credentials. Full `.dm` exports use AES-256-GCM with a PBKDF2-derived key.
 
 ## Release
 
@@ -56,23 +122,25 @@ See [docs/UPDATE_MANIFEST.md](docs/UPDATE_MANIFEST.md) for publishing and securi
 powershell -ExecutionPolicy Bypass -File scripts/build-release.ps1
 ```
 
-Published files are written to `artifacts/publish`. Inno Setup 6 is required to produce the installer used by automatic updates. Package and installer names use the version in `Directory.Build.props`.
+The release script publishes self-contained `win-x64` files and uses the version in `Directory.Build.props`. Inno Setup 6 is required to create the installer used by automatic updates.
 
-The repository uses `DirectoryMonitor.slnx` as its only solution file.
+Published releases and notes belong on the [GitHub Releases](https://github.com/ntphucc/directory-monitor/releases) page. Update manifest publishing is documented in [UPDATE_MANIFEST.md](docs/UPDATE_MANIFEST.md).
 
-All ListBox items use vertically centered content. The main title bar includes an explicit **Exit** button that confirms before stopping monitoring; the standard window **X** continues to minimize the app to the system tray.
+## Documentation
 
-The Settings tab supports **System**, **Light**, and **Dark** themes. System mode follows Windows theme changes while the app is running.
+- [Architecture](docs/ARCHITECTURE.md)
+- [Database schema](docs/DATABASE_SCHEMA.md)
+- [Operations guide](docs/OPERATIONS.md)
+- [Text template tokens](docs/TEXT_TEMPLATE_TOKENS.md)
+- [Update manifest](docs/UPDATE_MANIFEST.md)
+- [Test report](docs/TEST_REPORT.md)
+- [Customer-facing implementation plan](DIRECTORY_MONITOR_PLAN.md)
+- [Changelog](CHANGELOG.md)
 
-## Import and export
+## Contributing and security
 
-Settings provides Import/Export for directories, the currently filtered in-memory Event grid, and outputs:
+Read [CONTRIBUTING.md](CONTRIBUTING.md) before opening a pull request. Report vulnerabilities privately according to [SECURITY.md](SECURITY.md); never place credentials, connection strings, private paths, or customer data in a public issue.
 
-- JSON and XML are readable formats and intentionally omit PostgreSQL/SQL Server credentials.
-- `.dm` is the complete portable format. It is encrypted using AES-256-GCM with a password-derived key (PBKDF2-HMAC-SHA256, 600,000 iterations).
-- Imported directories and outputs are always Disabled. Imported events are stored locally with status `Imported`, create no delivery records, and are never replayed to outputs.
-- Import conflicts with an existing ID are skipped and reported.
+## License status
 
-See [DIRECTORY_MONITOR_PLAN.md](DIRECTORY_MONITOR_PLAN.md) for the customer-facing implementation plan.
-
-Handover documents are in `docs`: database schema, text tokens, operations guide, and the current test report.
+No software license has been selected yet. The source is publicly visible, but copyright law applies and no permission to use, modify, or redistribute the software is granted until the repository owner adds a license.

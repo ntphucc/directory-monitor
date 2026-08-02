@@ -1,0 +1,39 @@
+name: Feature request
+description: Suggest an improvement for Directory Monitor.
+title: "[Feature]: "
+labels: [enhancement]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem to solve
+      description: Explain the workflow or limitation, without including customer-sensitive information.
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed solution
+    validations:
+      required: true
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      options:
+        - Filesystem monitoring
+        - User interface
+        - Text output
+        - PostgreSQL
+        - SQL Server
+        - Windows Event Log
+        - Import/export
+        - Updates and installation
+        - Documentation
+        - Other
+    validations:
+      required: true

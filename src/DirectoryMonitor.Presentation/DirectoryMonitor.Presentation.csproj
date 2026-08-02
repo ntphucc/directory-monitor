@@ -9,16 +9,17 @@
   <ItemGroup>
     <Resource Include="Assets\directory-monitor.png" />
     <Resource Include="Assets\directory-monitor.ico" />
-    <None Include="$(NuGetPackageRoot)system.diagnostics.eventlog\9.0.2\runtimes\win\lib\net9.0\System.Diagnostics.EventLog.Messages.dll" Link="System.Diagnostics.EventLog.Messages.dll" TargetPath="System.Diagnostics.EventLog.Messages.dll" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" ExcludeFromSingleFile="true" />
+    <None Include="$(PkgSystem_Diagnostics_EventLog)\runtimes\win\lib\net9.0\System.Diagnostics.EventLog.Messages.dll" Link="System.Diagnostics.EventLog.Messages.dll" TargetPath="System.Diagnostics.EventLog.Messages.dll" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" ExcludeFromSingleFile="true" />
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.2" />
-    <PackageReference Include="Microsoft.Extensions.Hosting" Version="9.0.2" />
-    <PackageReference Include="Serilog" Version="4.4.0" />
-    <PackageReference Include="Serilog.Settings.Configuration" Version="10.0.1" />
-    <PackageReference Include="Serilog.Sinks.Async" Version="2.1.0" />
-    <PackageReference Include="Serilog.Sinks.File" Version="7.0.0" />
+    <PackageReference Include="CommunityToolkit.Mvvm" />
+    <PackageReference Include="Microsoft.Extensions.Hosting" />
+    <PackageReference Include="Serilog" />
+    <PackageReference Include="Serilog.Settings.Configuration" />
+    <PackageReference Include="Serilog.Sinks.Async" />
+    <PackageReference Include="Serilog.Sinks.File" />
+    <PackageReference Include="System.Diagnostics.EventLog" GeneratePathProperty="true" PrivateAssets="all" />
   </ItemGroup>
 
   <ItemGroup>
@@ -40,7 +41,7 @@
   </PropertyGroup>
 
   <Target Name="CopyEventLogMessageResource" AfterTargets="Publish">
-    <Copy SourceFiles="$(NuGetPackageRoot)system.diagnostics.eventlog\9.0.2\runtimes\win\lib\net9.0\System.Diagnostics.EventLog.Messages.dll" DestinationFolder="$(PublishDir)" SkipUnchangedFiles="true" />
+    <Copy SourceFiles="$(PkgSystem_Diagnostics_EventLog)\runtimes\win\lib\net9.0\System.Diagnostics.EventLog.Messages.dll" DestinationFolder="$(PublishDir)" SkipUnchangedFiles="true" />
   </Target>
 
 </Project>

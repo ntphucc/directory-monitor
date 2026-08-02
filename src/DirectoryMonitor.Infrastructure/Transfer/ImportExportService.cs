@@ -1,6 +1,7 @@
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;
+using System.Xml;
 using System.Xml.Serialization;
 using DirectoryMonitor.Application;
 using DirectoryMonitor.Domain;
@@ -212,7 +213,12 @@ public sealed class ImportExportService(IConfigurationStore store, ILogger<Impor
     {
         var serializer = new XmlSerializer(typeof(TransferEnvelopeV1));
         using var stream = new MemoryStream(bytes);
-        return serializer.Deserialize(stream) as TransferEnvelopeV1;
+        using var reader = XmlReader.Create(stream, new XmlReaderSettings
+        {
+            DtdProcessing = DtdProcessing.Prohibit,
+            XmlResolver = null
+        });
+        return serializer.Deserialize(reader) as TransferEnvelopeV1;
     }
 
     private static byte[] EncryptDm(byte[] plaintext, string password)

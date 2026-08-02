@@ -6,7 +6,8 @@ Build target: .NET 9, `net9.0-windows`, Windows x64
 ## Automated result
 
 - Release build: passed with 0 warnings and 0 errors.
-- Automated tests: 73 passed, 0 failed.
+- Automated tests: 78 passed, 0 failed.
+- Coverage collection: 49.2% line coverage and 41.6% branch coverage; CI retains the Cobertura report and TRX results as artifacts.
 - WPF startup smoke test: process remained healthy and initialized SQLite.
 - Self-contained startup smoke test: passed.
 - SQLite outbox load test: 1,000 durable events in under 0.3 seconds on the development machine, above 100 events/second.
@@ -16,6 +17,8 @@ Covered areas include glob matching, text templates/JSON escaping, SQLite config
 Presentation coverage also verifies global vertical centering/stretching for every `ListBoxItem`, the localized main-window Exit action, confirmation through the shared clean-shutdown path, and preservation of the standard close-to-tray behavior.
 
 Version 1.1.8 coverage additionally verifies Light/Dark palette parity, System/Light/Dark UI wiring, Directory/Output context and double-click actions, Event-grid column removal/order and UI-only clear behavior, Serilog/appsettings configuration wiring, JSON/XML credential omission, encrypted `.dm` round-trip, wrong-password/tamper rejection, forced-disabled imports, dangling destination cleanup, no-delivery event import, and migration from legacy unique `SequenceNumber` to `(MachineId, SequenceNumber)` while preserving pending delivery. A runtime smoke test confirmed the external appsettings file loads, Serilog configuration replaces the bootstrap logger, and SQLite is initialized successfully.
+
+Repository-quality coverage verifies the CI and CodeQL workflows, least-privilege workflow permissions, central NuGet package versions, per-project lock files, warnings-as-errors, required public governance documents, sensitive runtime-file exclusions, and DTD-safe XML import configuration.
 
 Solution coverage verifies that `DirectoryMonitor.slnx` is the only solution file, contains all five projects, and is used by the release build script. Restore and Release tests were executed directly through the SLNX solution.
 

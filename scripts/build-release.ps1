@@ -17,6 +17,8 @@ $customerZip = Join-Path $repoRoot "artifacts\Directory-Monitor-$appVersion-Cust
 $manifestPath = Join-Path $repoRoot "artifacts\update-manifest-$appVersion.sample.json"
 $releaseNotesEn = Join-Path $repoRoot "docs\releases\$appVersion.en.txt"
 $releaseNotesVi = Join-Path $repoRoot "docs\releases\$appVersion.vi.txt"
+$solution = Join-Path $repoRoot "DirectoryMonitor.slnx"
+$presentationProject = Join-Path $repoRoot "src\DirectoryMonitor.Presentation\DirectoryMonitor.Presentation.csproj"
 
 foreach ($target in @($publishDir, $portableDir, $customerStageDir)) {
     $resolvedParent = [System.IO.Path]::GetFullPath((Split-Path -Parent $target))
@@ -25,13 +27,17 @@ foreach ($target in @($publishDir, $portableDir, $customerStageDir)) {
     if (Test-Path $resolvedTarget) { Remove-Item -LiteralPath $resolvedTarget -Recurse -Force }
 }
 
-dotnet test (Join-Path $repoRoot "DirectoryMonitor.slnx") -c $Configuration --no-restore
+dotnet restore $solution --locked-mode
+if ($LASTEXITCODE -ne 0) { throw "Locked solution restore failed with exit code $LASTEXITCODE." }
+dotnet build $solution -c $Configuration --no-restore
+if ($LASTEXITCODE -ne 0) { throw "Release build failed with exit code $LASTEXITCODE." }
+dotnet test $solution -c $Configuration --no-build --no-restore
 if ($LASTEXITCODE -ne 0) { throw "Release tests failed with exit code $LASTEXITCODE." }
 if (-not $SkipRuntimeRestore) {
-    dotnet restore (Join-Path $repoRoot "src\DirectoryMonitor.Presentation\DirectoryMonitor.Presentation.csproj") -r win-x64
+    dotnet restore $presentationProject -r win-x64 --locked-mode
     if ($LASTEXITCODE -ne 0) { throw "Self-contained runtime restore failed with exit code $LASTEXITCODE." }
 }
-dotnet publish (Join-Path $repoRoot "src\DirectoryMonitor.Presentation\DirectoryMonitor.Presentation.csproj") -c $Configuration -r win-x64 --self-contained true --no-restore -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true -o $publishDir
+dotnet publish $presentationProject -c $Configuration -r win-x64 --self-contained true --no-restore -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true -o $publishDir
 if ($LASTEXITCODE -ne 0) { throw "Self-contained publish failed with exit code $LASTEXITCODE." }
 
 $innoCandidates = @(
@@ -78,10 +84,10 @@ if (Test-Path $installerPath) { Copy-Item -LiteralPath $installerPath -Destinati
 if (Test-Path $manifestPath) { Copy-Item -LiteralPath $manifestPath -Destination $customerRoot }
 Copy-Item -LiteralPath (Join-Path $repoRoot "installer\Data-README.txt") -Destination (Join-Path $customerRoot "App\Data\README.txt")
 Copy-Item -Path (Join-Path $repoRoot "docs\*") -Destination (Join-Path $customerRoot "Documentation") -Recurse
-Copy-Item -LiteralPath (Join-Path $repoRoot "README.md"), (Join-Path $repoRoot "DIRECTORY_MONITOR_PLAN.md") -Destination $customerRoot
-Copy-Item -LiteralPath (Join-Path $repoRoot ".gitignore"), (Join-Path $repoRoot "Directory.Build.props"), (Join-Path $repoRoot "DirectoryMonitor.slnx") -Destination (Join-Path $customerRoot "Source")
+Copy-Item -LiteralPath (Join-Path $repoRoot "README.md"), (Join-Path $repoRoot "DIRECTORY_MONITOR_PLAN.md"), (Join-Path $repoRoot "CHANGELOG.md"), (Join-Path $repoRoot "CONTRIBUTING.md"), (Join-Path $repoRoot "SECURITY.md") -Destination $customerRoot
+Copy-Item -LiteralPath (Join-Path $repoRoot ".editorconfig"), (Join-Path $repoRoot ".gitattributes"), (Join-Path $repoRoot ".gitignore"), (Join-Path $repoRoot "Directory.Build.props"), (Join-Path $repoRoot "Directory.Packages.props"), (Join-Path $repoRoot "DirectoryMonitor.slnx"), (Join-Path $repoRoot "global.json") -Destination (Join-Path $customerRoot "Source")
 
-foreach ($sourceFolder in @("src", "tests", "installer", "scripts")) {
+foreach ($sourceFolder in @(".github", "src", "tests", "installer", "scripts")) {
     $sourceBase = Join-Path $repoRoot $sourceFolder
     Get-ChildItem -LiteralPath $sourceBase -Recurse -File |
         Where-Object { $_.FullName -notmatch '[\\/](bin|obj)[\\/]' } |

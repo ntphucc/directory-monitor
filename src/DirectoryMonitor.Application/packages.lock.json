@@ -1,0 +1,11 @@
+{
+  "version": 2,
+  "dependencies": {
+    "net9.0": {
+      "directorymonitor.domain": {
+        "type": "Project"
+      }
+    },
+    "net9.0/win-x64": {}
+  }
+}
