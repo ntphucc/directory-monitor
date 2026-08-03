@@ -14,19 +14,19 @@ public sealed class PresentationMarkupTests
         var markup = File.ReadAllText(Path.Combine(RepositoryRoot, "src", "DirectoryMonitor.Presentation", "MainWindow.xaml"));
 
         Assert.Equal(2, Count(markup, "Header=\"{DynamicResource Status}\""));
-        Assert.Contains("Header=\"{DynamicResource Status}\" Width=\"80\"", markup);
+        Assert.Contains("Header=\"{DynamicResource Status}\" Width=\"72\"", markup);
         Assert.Contains("DirectoryMonitorStatus.Monitoring", markup);
         Assert.Contains("DirectoryMonitorStatus.Disabled", markup);
         Assert.Contains("DirectoryMonitorStatus.Unavailable", markup);
         Assert.Contains("DirectoryMonitorStatus.Reconnecting", markup);
         Assert.Contains("DirectoryMonitorStatus.Error", markup);
-        Assert.Contains("Property=\"Text\" Value=\"✔️\"", markup);
-        Assert.Contains("Property=\"Text\" Value=\"🚫\"", markup);
-        Assert.Contains("Property=\"Text\" Value=\"⚠️\"", markup);
-        Assert.Contains("Property=\"Text\" Value=\"❌\"", markup);
-        Assert.Contains("Property=\"Foreground\" Value=\"{DynamicResource NewAccentBrush}\"", markup);
-        Assert.Contains("Property=\"Foreground\" Value=\"{DynamicResource PropertiesAccentBrush}\"", markup);
-        Assert.Contains("Property=\"Foreground\" Value=\"{DynamicResource DeleteAccentBrush}\"", markup);
+        Assert.Contains("Value=\"{StaticResource IconCheck}\"", markup);
+        Assert.Contains("Value=\"{StaticResource IconDisabled}\"", markup);
+        Assert.Contains("Value=\"{StaticResource IconWarning}\"", markup);
+        Assert.Contains("Value=\"{StaticResource IconError}\"", markup);
+        Assert.Contains("Property=\"Stroke\" Value=\"{DynamicResource NewAccentBrush}\"", markup);
+        Assert.Contains("Property=\"Stroke\" Value=\"{DynamicResource PropertiesAccentBrush}\"", markup);
+        Assert.Contains("Property=\"Stroke\" Value=\"{DynamicResource DeleteAccentBrush}\"", markup);
         Assert.Contains("AutomationProperties.Name", markup);
         Assert.Contains("Text=\"{Binding StatusMessage}\"", markup);
         Assert.Contains("Text=\"{Binding Status}\"", markup);
@@ -36,19 +36,25 @@ public sealed class PresentationMarkupTests
     [Fact]
     public void Shared_grid_styles_center_all_cells_vertically_and_status_cells_horizontally()
     {
-        var markup = File.ReadAllText(Path.Combine(RepositoryRoot, "src", "DirectoryMonitor.Presentation", "App.xaml"));
-        var mainWindow = File.ReadAllText(Path.Combine(RepositoryRoot, "src", "DirectoryMonitor.Presentation", "MainWindow.xaml"));
+        var presentationFolder = Path.Combine(RepositoryRoot, "src", "DirectoryMonitor.Presentation");
+        var appMarkup = File.ReadAllText(Path.Combine(presentationFolder, "App.xaml"));
+        var markup = File.ReadAllText(Path.Combine(presentationFolder, "Resources", "Themes", "Controls.xaml"));
+        var mainWindow = File.ReadAllText(Path.Combine(presentationFolder, "MainWindow.xaml"));
 
-        Assert.Contains("<Style TargetType=\"DataGridRow\"><Setter Property=\"VerticalContentAlignment\" Value=\"Center\"", markup);
-        Assert.Contains("<Style TargetType=\"DataGridCell\"><Setter Property=\"VerticalContentAlignment\" Value=\"Center\"", markup);
-        Assert.Contains("<Style TargetType=\"DataGridColumnHeader\"><Setter Property=\"VerticalContentAlignment\" Value=\"Center\"", markup);
-        Assert.Contains("<Style TargetType=\"ListBoxItem\"><Setter Property=\"VerticalContentAlignment\" Value=\"Center\"", markup);
+        Assert.Contains("Source=\"Resources/Themes/Controls.xaml\"", appMarkup);
+        Assert.Contains("<Style TargetType=\"DataGridRow\">", markup);
+        Assert.Contains("<Style TargetType=\"DataGridCell\">", markup);
+        Assert.Contains("<Style TargetType=\"DataGridColumnHeader\">", markup);
+        Assert.Contains("<Style TargetType=\"ListBoxItem\">", markup);
+        Assert.True(Count(markup, "Property=\"VerticalContentAlignment\" Value=\"Center\"") >= 4);
         Assert.Contains("Property=\"HorizontalContentAlignment\" Value=\"Stretch\"", markup);
         Assert.Contains("x:Key=\"CenteredDataGridCellStyle\"", markup);
         Assert.Contains("Property=\"HorizontalContentAlignment\" Value=\"Center\"", markup);
         Assert.Contains("x:Key=\"VerticallyCenteredDataGridTextStyle\"", markup);
         Assert.Equal(12, Count(mainWindow, "ElementStyle=\"{StaticResource VerticallyCenteredDataGridTextStyle}\""));
-        Assert.Contains("<DataGrid.RowStyle><Style TargetType=\"DataGridRow\" BasedOn=\"{StaticResource {x:Type DataGridRow}}\">", mainWindow);
+        Assert.Contains("<DataGrid.RowStyle>", mainWindow);
+        Assert.Contains("BasedOn=\"{StaticResource {x:Type DataGridRow}}\"", mainWindow);
+        Assert.True(Count(markup, "<ControlTemplate") >= 8, "Expected native modern control templates in the shared design system.");
     }
 
     [Fact]
@@ -59,7 +65,7 @@ public sealed class PresentationMarkupTests
         var windowCode = File.ReadAllText(Path.Combine(presentationFolder, "MainWindow.xaml.cs"));
         var appCode = File.ReadAllText(Path.Combine(presentationFolder, "App.xaml.cs"));
 
-        Assert.Contains("Content=\"{DynamicResource ExitApplication}\"", markup);
+        Assert.Contains("Text=\"{DynamicResource ExitApplication}\"", markup);
         Assert.Contains("Click=\"ExitApplication_Click\"", markup);
         Assert.Contains("await app.RequestExitAsync()", windowCode);
         Assert.Contains("public async Task RequestExitAsync()", appCode);
@@ -76,7 +82,7 @@ public sealed class PresentationMarkupTests
 
         Assert.Contains("TextTrimming=\"CharacterEllipsis\"", markup);
         Assert.Contains("ToolTip=\"{Binding LastError}\"", markup);
-        Assert.Contains("Text=\"{Binding SelectedDestination.LastError,Mode=OneWay}\"", markup);
+        Assert.Contains("Text=\"{Binding SelectedDestination.LastError, Mode=OneWay}\"", markup);
         Assert.Contains("IsReadOnly=\"True\" AcceptsReturn=\"True\" TextWrapping=\"Wrap\"", markup);
         Assert.Contains("Command=\"{Binding CopyLastErrorCommand}\"", markup);
         Assert.Contains("private void CopyLastError()", viewModel);
@@ -106,7 +112,7 @@ public sealed class PresentationMarkupTests
         var viewModel = File.ReadAllText(Path.Combine(presentationFolder, "ViewModels", "MainViewModel.cs"));
 
         Assert.Contains("Header=\"{DynamicResource SQLiteDatabase}\"", markup);
-        Assert.Contains("Text=\"{Binding DatabasePath,Mode=OneWay}\"", markup);
+        Assert.Contains("Text=\"{Binding DatabasePath, Mode=OneWay}\"", markup);
         Assert.Contains("IsReadOnly=\"True\"", markup);
         Assert.Contains("Command=\"{Binding OpenDataFolderCommand}\"", markup);
         Assert.Contains("public string DatabasePath => _store.DatabasePath", viewModel);
